@@ -143,7 +143,8 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return ;
+    //从集合的角度考虑
+    return ~(~x&~y)&(~(x&y));
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -152,8 +153,8 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int tmin(void) {
-    
-  return ;
+    int res =1; 
+  return res<<31 ;
 
 }
 //2
@@ -165,7 +166,8 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+
+  return !(x^(~0)^(1<<31)) ;
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -176,7 +178,12 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+    //构造类似0101的数据
+    //该数据与x进行或运算之后得到应该全是1才能说明奇数位全是1
+    //int a=85;
+    int mask = ((85<<24)|(85<<16)|(85<<8)|85);
+
+  return !((x|mask)^(~0));
 }
 /* 
  * negate - return -x 
@@ -186,7 +193,7 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~x +1;
 }
 //3
 /* 
@@ -199,7 +206,11 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+    //检测前28位是不是000...0011,再检测后四位
+    //后4位的最高位如果是1，那么其后面两个位必须是0
+    int fourBits=x&15;//取出后四位
+    //给fourBits+7如果进位的话，就说明不是在这个范围了
+    return  (!((x>>4)^3))&(!((fourBits+6)&16));
 }
 /* 
  * conditional - same as x ? y : z 
