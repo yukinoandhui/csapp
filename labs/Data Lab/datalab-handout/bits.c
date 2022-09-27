@@ -220,7 +220,8 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+
+    return ((((!(!x))<<31)>>31)&y)+((((!x)<<31)>>31)&z) ;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -230,7 +231,7 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  return !((y+(~x+1))&(1<<31));
 }
 //4
 /* 
@@ -242,7 +243,10 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+    //这个感觉有点难，不太会
+    //看了答案发现自己只差一点就做出来了，这个或没想到去使用
+    //注意符号位为1的时候的右移，得到-1
+  return ((x|(~x+1))>>31) +1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -257,7 +261,29 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+    /**这个也很难，大致思路如下
+    对于正数，我们只需要找到为1的最高位k，那么他的结果就是k+1
+    对于负数，我们只需要找到为0的最高位，那么他的结果就是k+1
+    具体做起来有点类似二分法 
+     **/
+    //对于正数不变，对于负数，我们可以取反，这样我们找到最高位为1的就是负数最高位为0的位置
+    int sign = x>>31;
+    //正负变化的统一形式
+    x = (sign&~x)|(~sign&x);
+    int b16,b8,b4,b2,b1,b0;
+    b16 =(!!(x>>16))<<4;//看看前16位有没有1，有的话返回1然后并且位移四位，代表高16位有1，我们至少需要16个bit
+    x= x>>b16;//没有1的话等于不位移，此时我们再看看8到16位的情况
+    b8 =(!!(x>>8))<<3;//8到16位的情况
+    x = x>>b8;
+    b4 =(!!(x>>4))<<2;
+    x = x>>b4;
+    b2 = (!!(x>>2))<<1;
+    x = x>>b2;
+    b1 = (!!(x>>1));
+    x = x>>b1;
+    b0 =x;
+    
+    return b16+b8+b4+b2+b1+b0+1;
 }
 //float
 /* 
