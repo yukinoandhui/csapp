@@ -298,7 +298,16 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+    //float正无穷大是0x7f800000
+    //注意，溢出后是无穷大，不是NaN
+    int exp =(uf&0x7f800000)>>23;
+    int sign =uf&(1<<31);
+    if(exp==255) return uf;
+    if(exp ==0) return uf<<1|sign;
+    exp++;
+    if(exp==255) return 0x7f800000|sign;
+    //0x807fffff是除了exp位置为0，其他位置都为1的数
+    return (exp<<23)|(uf&0x807fffff);
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -313,7 +322,14 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+    int exp =(uf&0x7f800000)>>23;
+    int sign =(uf>>31)&1;
+    int bias =127;
+    if(exp<bias)return 0;
+    if(exp-bias>31)return 0x80000000u;
+    int res =1<<(exp-bias);
+    if(sign)return -res;
+    return res;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -329,5 +345,10 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+    if(x<=-150) return 0;
+    if(x<=-127) return (1<<23)>>(-126-x);
+    if(x<=127) return (x+127)<<23;
+    return 0x7f800000u;
+
+    return ;
 }
