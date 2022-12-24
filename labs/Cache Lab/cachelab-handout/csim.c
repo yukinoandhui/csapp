@@ -13,6 +13,7 @@ int s, E, b, S;
 int hit = 0, miss = 0, eviction = 0;
 char *filepath = NULL;
 cache_line **cache=NULL;
+
 void init()
 {
     // 相当于SxE大小的矩阵，因为用不到block offset，所以可以不考虑他
